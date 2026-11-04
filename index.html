@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Colorimetria Capilar Pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-950/70 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-pink-500/20 font-bold text-lg">
+                    🎨
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold bg-gradient-to-r from-pink-400 to-indigo-300 bg-clip-text text-transparent">Colorimetry Pro</h1>
+                    <p class="text-xs text-slate-400">Guia & Calculadora de Colorimetria Capilar</p>
+                </div>
+            </div>
+            <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700">v2.0 Dominância</span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 mt-6">
+        <!-- Navegação por Abas -->
+        <div class="flex bg-slate-800/80 p-1 rounded-xl mb-6 border border-slate-700/60 overflow-x-auto">
+            <button onclick="setTab('diag')" id="tab-diag" class="flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-white">
+                🎯 Clareamento & OX
+            </button>
+            <button onclick="setTab('regra11')" id="tab-regra11" class="flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-white">
+                📏 Regra do 11
+            </button>
+            <button onclick="setTab('mistura')" id="tab-mistura" class="flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition-all bg-pink-600 text-white shadow-md">
+                ⚖️ Mistura & Dominância
+            </button>
+        </div>
+
+        <!-- ABA 1: Clareamento, OX e Neutralização -->
+        <section id="content-diag" class="space-y-6 hidden">
+            <div class="bg-slate-800/50 border border-slate-700/70 p-5 rounded-2xl">
+                <h2 class="text-base font-semibold mb-4 text-pink-300 flex items-center gap-2">
+                    Diagnóstico de Clareamento (Cabelos Naturais / Virgens)
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Altura de Tom Atual (Natural)</label>
+                        <select id="tom-atual" onchange="calcularClareamento()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-pink-500">
+                            <option value="1">1 - Preto</option>
+                            <option value="2">2 - Moreno / Castanho Escuríssimo</option>
+                            <option value="3">3 - Castanho Escuro</option>
+                            <option value="4">4 - Castanho Médio</option>
+                            <option value="5" selected>5 - Castanho Claro</option>
+                            <option value="6">6 - Louro Escuro</option>
+                            <option value="7">7 - Louro Médio</option>
+                            <option value="8">8 - Louro Claro</option>
+                            <option value="9">9 - Louro Muito Claro</option>
+                            <option value="10">10 - Louro Claríssimo</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Altura de Tom Desejada</label>
+                        <select id="tom-desejado" onchange="calcularClareamento()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-pink-500">
+                            <option value="1">1 - Preto</option>
+                            <option value="2">2 - Moreno</option>
+                            <option value="3">3 - Castanho Escuro</option>
+                            <option value="4">4 - Castanho Médio</option>
+                            <option value="5">5 - Castanho Claro</option>
+                            <option value="6">6 - Louro Escuro</option>
+                            <option value="7">7 - Louro Médio</option>
+                            <option value="8" selected>8 - Louro Claro</option>
+                            <option value="9">9 - Louro Muito Claro</option>
+                            <option value="10">10 - Louro Claríssimo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Resultados Clareamento -->
+                <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400">Tons a clarear</span>
+                        <p id="res-dif-tons" class="text-2xl font-bold text-white mt-1">3 tons</p>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400">Oxidante sugerido</span>
+                        <p id="res-ox" class="text-2xl font-bold text-pink-400 mt-1">30 Vol (9%)</p>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400">Fundo exposto</span>
+                        <p id="res-fundo" class="text-lg font-bold text-amber-400 mt-1">Amarelo (8)</p>
+                    </div>
+                </div>
+
+                <!-- Guia de Neutralização -->
+                <div id="res-neutralizador-box" class="mt-4 p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/40 text-sm">
+                    <span class="font-semibold text-indigo-300">💡 Para neutralizar o fundo exposto:</span>
+                    <p id="res-neutralizador" class="text-slate-300 mt-1">Adicione reflexo Irisado/Violeta (.2) para neutralizar o amarelo indesejado.</p>
+                </div>
+
+                <div class="mt-4 text-xs text-amber-400/90 bg-amber-950/20 border border-amber-800/40 p-3 rounded-lg">
+                    ⚠️ <strong>Lembre-se:</strong> <em>"Tinta não clareia tinta"</em>. Cabelo já tingido requer decapagem/descoloração prévia.
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 2: Regra do 11 -->
+        <section id="content-regra11" class="space-y-6 hidden">
+            <div class="bg-slate-800/50 border border-slate-700/70 p-5 rounded-2xl">
+                <div>
+                    <h2 class="text-base font-semibold text-pink-300">Cálculo da Regra do 11</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Determina a quantidade (cm lineares) de corretor puro para neutralização por tudo de massa.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Altura de Tom da Cor Base</label>
+                        <select id="r11-tom" onchange="calcularRegra11()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-pink-500">
+                            <option value="1">1 - Preto</option>
+                            <option value="2">2 - Moreno</option>
+                            <option value="3">3 - Castanho Escuro</option>
+                            <option value="4">4 - Castanho Médio</option>
+                            <option value="5">5 - Castanho Claro</option>
+                            <option value="6">6 - Louro Escuro</option>
+                            <option value="7" selected>7 - Louro Médio</option>
+                            <option value="8">8 - Louro Claro</option>
+                            <option value="9">9 - Louro Muito Claro</option>
+                            <option value="10">10 - Louro Claríssimo</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Gramas da Mistura (Massa)</label>
+                        <input id="r11-gramas" type="number" value="60" min="1" max="200" oninput="calcularRegra11()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-pink-500">
+                        <span class="text-[11px] text-slate-500">Tubo padrão = 60g</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-slate-900/90 border border-slate-800 p-5 rounded-xl">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <span class="text-xs text-slate-400 uppercase tracking-wider">Quantidade Recomendada</span>
+                            <div class="flex items-baseline gap-2 mt-1">
+                                <span id="r11-resultado-cm" class="text-3xl font-extrabold text-pink-400">4.0 cm</span>
+                                <span id="r11-resultado-g" class="text-sm text-slate-400">(aprox. 2.0g)</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700/60 max-w-sm">
+                            <span class="text-xs font-semibold text-slate-300">Corretor indicado para neutralização:</span>
+                            <p id="r11-corretor" class="text-xs text-indigo-300 mt-1">Azul / Cinza (.1) contra fundo Alaranjado</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 3: Mistura de Tintas com Regra de Dominância -->
+        <section id="content-mistura" class="space-y-6">
+            <div class="bg-slate-800/50 border border-slate-700/70 p-5 rounded-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h2 class="text-base font-semibold text-pink-300">Mistura de Tintas com Regra de Dominância</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Calcula a densidade de pigmento (o escuro puxa a cor) e a interação entre nuances.</p>
+                    </div>
+                    <span class="text-[11px] bg-pink-500/10 text-pink-300 px-2.5 py-1 rounded-md border border-pink-500/30 font-medium">Algoritmo Realista</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                    <!-- Tinta 1 -->
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-pink-400 uppercase tracking-wider">Tinta 1</h3>
+                            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400">Tubo A</span>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Altura de Tom</label>
+                            <select id="mix-tom1" onchange="calcularMistura()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:border-pink-500">
+                                <option value="1">1 - Preto</option>
+                                <option value="2">2 - Moreno</option>
+                                <option value="3">3 - Castanho Escuro</option>
+                                <option value="4">4 - Castanho Médio</option>
+                                <option value="5">5 - Castanho Claro</option>
+                                <option value="6" selected>6 - Louro Escuro</option>
+                                <option value="7">7 - Louro Médio</option>
+                                <option value="8">8 - Louro Claro</option>
+                                <option value="9">9 - Louro Muito Claro</option>
+                                <option value="10">10 - Louro Claríssimo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Reflexo / Nuance</label>
+                            <select id="mix-ref1" onchange="calcularMistura()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:border-pink-500">
+                                <option value="0" selected>.0 - Natural (Sem reflexo)</option>
+                                <option value="1">.1 - Cinza (Base Azul)</option>
+                                <option value="2">.2 - Irisado / Violeta</option>
+                                <option value="3">.3 - Dourado (Amarelo)</option>
+                                <option value="4">.4 - Acobreado (Laranja)</option>
+                                <option value="6">.6 - Vermelho</option>
+                                <option value="7">.7 - Mate / Marrom (Verde)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Quantidade (Gramas)</label>
+                            <input id="mix-g1" type="number" value="30" min="1" max="200" oninput="calcularMistura()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:border-pink-500">
+                        </div>
+                    </div>
+
+                    <!-- Tinta 2 -->
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Tinta 2</h3>
+                            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400">Tubo B</span>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Altura de Tom</label>
+                            <select id="mix-tom2" onchange="calcularMistura()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:border-pink-500">
+                                <option value="1">1 - Preto</option>
+                                <option value="2">2 - Moreno</option>
+                                <option value="3">3 - Castanho Escuro</option>
+                                <option value="4">4 - Castanho Médio</option>
+                                <option value="5">5 - Castanho Claro</option>
+                                <option value="6">6 - Louro Escuro</option>
+                                <option value="7">7 - Louro Médio</option>
+                                <option value="8" selected>8 - Louro Claro</option>
+                                <option value="9">9 - Louro Muito Claro</option>
+                                <option value="10">10 - Louro Claríssimo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Reflexo / Nuance</label>
+                            <select id="mix-ref2" onchange="calcularMistura()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:border-pink-500">
+                                <option value="0" selected>.0 - Natural (Sem reflexo)</option>
+                                <option value="1">.1 - Cinza (Base Azul)</option>
+                                <option value="2">.2 - Irisado / Violeta</option>
+                                <option value="3">.3 - Dourado (Amarelo)</option>
+                                <option value="4">.4 - Acobreado (Laranja)</option>
+                                <option value="6">.6 - Vermelho</option>
+                                <option value="7">.7 - Mate / Marrom (Verde)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Quantidade (Gramas)</label>
+                            <input id="mix-g2" type="number" value="30" min="1" max="200" oninput="calcularMistura()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:border-pink-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerta da Regra dos 2 Tons (Compatibilidade) -->
+                <div id="mix-alerta-compatibilidade" class="mt-4 p-3.5 rounded-xl border flex items-center gap-3 text-xs">
+                    <!-- Gerado via JavaScript -->
+                </div>
+
+                <!-- Painel de Resultados com Dominância -->
+                <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Tom Prático vs Teórico -->
+                    <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
+                        <span class="text-xs text-slate-400 uppercase tracking-wider block">Resultado Real no Cabelo</span>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span id="mix-resultado-real" class="text-3xl font-extrabold text-pink-400">6.8</span>
+                            <span id="mix-resultado-codigo" class="text-lg font-bold text-slate-200">6.8</span>
+                        </div>
+                        <p id="mix-descricao-real" class="text-xs text-slate-300 mt-1 font-medium">Louro Médio Fechado / Profundo</p>
+                        
+                        <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex justify-between">
+                            <span>Média Matemática Pura: <strong id="mix-matematica-pura" class="text-slate-300">7.0</strong></span>
+                            <span>Massa Total: <strong id="mix-peso-total" class="text-slate-300">60g</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Dominância de Nuances / Reflexos -->
+                    <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 uppercase tracking-wider block">Comportamento dos Reflexos</span>
+                            <p id="mix-status-reflexo" class="text-sm font-semibold text-indigo-300 mt-1">Reflexo Natural Puro (.0)</p>
+                            <p id="mix-detalhe-reflexo" class="text-xs text-slate-400 mt-1">Sem interferência de nuances adicionais.</p>
+                        </div>
+                        <div class="mt-2 p-2 bg-slate-800/60 rounded text-[11px] text-slate-400">
+                            📌 <strong>Regra de ouro:</strong> A cor mais escura tem maior peso molecular e concentração de pigmento; por isso puxa a mistura para si.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabela Rápida da Estrela de Oswald -->
+        <section class="mt-8 border border-slate-800 bg-slate-950/40 rounded-2xl p-5">
+            <h3 class="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                🌟 Guia Rápido de Neutralização (Estrela de Oswald)
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+                    <span class="text-amber-400 font-semibold block">Fundo Amarelo (.3)</span>
+                    <span class="text-slate-400">Neutraliza com:</span>
+                    <p class="text-purple-300 font-bold mt-0.5">Violeta / Irisado (.2)</p>
+                </div>
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+                    <span class="text-orange-400 font-semibold block">Fundo Laranja (.4)</span>
+                    <span class="text-slate-400">Neutraliza com:</span>
+                    <p class="text-blue-400 font-bold mt-0.5">Azul / Cinza (.1)</p>
+                </div>
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+                    <span class="text-red-400 font-semibold block">Fundo Vermelho (.6)</span>
+                    <span class="text-slate-400">Neutraliza com:</span>
+                    <p class="text-emerald-400 font-bold mt-0.5">Verde / Mate (.7)</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const fundos = {
+            1: { nome: "Preto / Sem fundo claro", neutralizador: "N/A" },
+            2: { nome: "Castanho muito escuro (Vermelho profundo)", neutralizador: "Verde / Mate (.7)" },
+            3: { nome: "Castanho Escuro (Vermelho)", neutralizador: "Verde / Mate (.7)" },
+            4: { nome: "Castanho Médio (Vermelho)", neutralizador: "Verde / Mate (.7)" },
+            5: { nome: "Castanho Claro (Vermelho-Alaranjado)", neutralizador: "Azul-Verde / Cinza Mate (.11 / .7)" },
+            6: { nome: "Louro Escuro (Laranja)", neutralizador: "Azul / Cinza (.1)" },
+            7: { nome: "Louro Médio (Laranja-Amarelado)", neutralizador: "Azul-Violeta (.12 / .21)" },
+            8: { nome: "Louro Claro (Amarelo)", neutralizador: "Violeta / Pérola / Irisado (.2)" },
+            9: { nome: "Louro Muito Claro (Amarelo Claro)", neutralizador: "Violeta suave (.2 / .02)" },
+            10: { nome: "Louro Claríssimo (Amarelo Pálido)", neutralizador: "Platina / Pérola leve" }
+        };
+
+        const nomesTons = {
+            1: "Preto", 2: "Moreno", 3: "Castanho Escuro", 4: "Castanho Médio",
+            5: "Castanho Claro", 6: "Louro Escuro", 7: "Louro Médio", 8: "Louro Claro",
+            9: "Louro Muito Claro", 10: "Louro Claríssimo"
+        };
+
+        const nomesReflexos = {
+            "0": "Natural", "1": "Cinza", "2": "Irisado",
+            "3": "Dourado", "4": "Acobreado", "6": "Vermelho", "7": "Mate/Marrom"
+        };
+
+        // Pares complementares de neutralização mútua
+        const opostos = {
+            "1": "4", "4": "1", // Azul anula Laranja
+            "2": "3", "3": "2", // Violeta anula Amarelo
+            "6": "7", "7": "6"  // Vermelho anula Verde
+        };
+
+        function setTab(tab) {
+            ['diag', 'regra11', 'mistura'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const content = document.getElementById(`content-${t}`);
+                if (t === tab) {
+                    btn.className = "flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition-all bg-pink-600 text-white shadow-md";
+                    content.classList.remove('hidden');
+                } else {
+                    btn.className = "flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-white";
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        // 1. Diagnóstico de Clareamento
+        function calcularClareamento() {
+            const atual = parseInt(document.getElementById('tom-atual').value);
+            const desejado = parseInt(document.getElementById('tom-desejado').value);
+            const diff = desejado - atual;
+
+            const difEl = document.getElementById('res-dif-tons');
+            const oxEl = document.getElementById('res-ox');
+            const fundoEl = document.getElementById('res-fundo');
+            const neutroEl = document.getElementById('res-neutralizador');
+
+            if (diff <= 0) {
+                difEl.innerText = diff === 0 ? "Mesmo tom" : `Escurecer ${Math.abs(diff)} tom(s)`;
+                oxEl.innerText = "10 Vol (3%)";
+                fundoEl.innerText = "Depósito de cor";
+                neutroEl.innerText = "Use coloração direta ou tonalizante para depósito uniforme.";
+                return;
+            }
+
+            difEl.innerText = `${diff} tom(s)`;
+            if (diff === 1) oxEl.innerText = "20 Vol (6%)";
+            else if (diff === 2) oxEl.innerText = "20 ou 30 Vol";
+            else if (diff === 3) oxEl.innerText = "30 Vol (9%)";
+            else if (diff === 4) oxEl.innerText = "40 Vol (12%) / Superclareador";
+            else oxEl.innerText = "Descoloração (+4 tons)";
+
+            const fundoInfo = fundos[desejado] || { nome: "Muito claro", neutralizador: "Tonalização suave" };
+            fundoEl.innerText = `${fundoInfo.nome}`;
+            neutroEl.innerText = `Para anular o residual deste tom: adicione ${fundoInfo.neutralizador}.`;
+        }
+
+        // 2. Regra do 11
+        function calcularRegra11() {
+            const tom = parseInt(document.getElementById('r11-tom').value);
+            const gramas = parseFloat(document.getElementById('r11-gramas').value) || 0;
+            const cmBasePara60g = 11 - tom;
+            const cmTotal = (cmBasePara60g * (gramas / 60));
+            const gramasCorretor = cmTotal * 0.5;
+
+            document.getElementById('r11-resultado-cm').innerText = `${cmTotal.toFixed(1)} cm`;
+            document.getElementById('r11-resultado-g').innerText = `(aprox. ${gramasCorretor.toFixed(2)}g)`;
+
+            const fundo = fundos[tom];
+            document.getElementById('r11-corretor').innerText = `${fundo.neutralizador} contra residual de ${fundo.nome}`;
+        }
+
+        // 3. Mistura com Regra de Dominância Tonal e de Nuances
+        function calcularMistura() {
+            const tom1 = parseInt(document.getElementById('mix-tom1').value);
+            const ref1 = document.getElementById('mix-ref1').value;
+            const g1 = parseFloat(document.getElementById('mix-g1').value) || 0;
+
+            const tom2 = parseInt(document.getElementById('mix-tom2').value);
+            const ref2 = document.getElementById('mix-ref2').value;
+            const g2 = parseFloat(document.getElementById('mix-g2').value) || 0;
+
+            const pesoTotal = g1 + g2;
+            if (pesoTotal <= 0) return;
+
+            // A) Média Matemática Teórica
+            const mediaMatematica = ((tom1 * g1) + (tom2 * g2)) / pesoTotal;
+            document.getElementById('mix-matematica-pura').innerText = mediaMatematica.toFixed(1);
+            document.getElementById('mix-peso-total').innerText = `${pesoTotal}g`;
+
+            // B) Aplicação da Regra de Dominância da Carga Pigmentar
+            const tomEscuro = Math.min(tom1, tom2);
+            const tomClaro = Math.max(tom1, tom2);
+            const dist = tomClaro - tomEscuro;
+
+            const gEscuro = (tom1 === tomEscuro) ? g1 : g2;
+            const gClaro = (tom1 === tomClaro) ? g1 : g2;
+
+            // O pigmento escuro possui densidade superior; seu peso efetivo cresce com a distância
+            const fatorDominancia = 1 + (dist * 0.18);
+            const pesoEfetivoEscuro = gEscuro * fatorDominancia;
+            const tomReal = ((tomEscuro * pesoEfetivoEscuro) + (tomClaro * gClaro)) / (pesoEfetivoEscuro + gClaro);
+
+            // C) Análise de Compatibilidade (Regra dos 2 tons)
+            const alertaBox = document.getElementById('mix-alerta-compatibilidade');
+            if (dist === 0) {
+                alertaBox.className = "mt-4 p-3.5 rounded-xl border border-emerald-800/40 bg-emerald-950/20 text-emerald-300 flex items-center gap-2 text-xs";
+                alertaBox.innerHTML = "✅ <strong>Mesma altura de tom:</strong> Mistura focada exclusivamente na combinação de reflexos.";
+            } else if (dist <= 1) {
+                alertaBox.className = "mt-4 p-3.5 rounded-xl border border-emerald-800/40 bg-emerald-950/20 text-emerald-300 flex items-center gap-2 text-xs";
+                alertaBox.innerHTML = `✅ <strong>Diferença de ${dist} tom:</strong> Excelente compatibilidade. Mistura suave e homogênea.`;
+            } else if (dist === 2) {
+                alertaBox.className = "mt-4 p-3.5 rounded-xl border border-amber-800/40 bg-amber-950/20 text-amber-300 flex items-center gap-2 text-xs";
+                alertaBox.innerHTML = `⚠️ <strong>Diferença de 2 tons (limite técnico):</strong> O tom escuro (${tomEscuro}) domina a mistura, puxando a altura real para baixo do valor matemático.`;
+            } else {
+                alertaBox.className = "mt-4 p-3.5 rounded-xl border border-rose-800/50 bg-rose-950/30 text-rose-300 flex items-center gap-2 text-xs";
+                alertaBox.innerHTML = `🚫 <strong>Distância excessiva (${dist} tons):</strong> A regra de dominância alerta que o tom ${tomEscuro} vai sobrepor e apagar o tom ${tomClaro}, com alto risco de resultado irregular.`;
+            }
+
+            // D) Cálculo da Dominância de Reflexos
+            let codigoReflexo = "";
+            let statusReflexo = "";
+            let detalheReflexo = "";
+
+            if (ref1 === "0" && ref2 === "0") {
+                codigoReflexo = ".0";
+                statusReflexo = "Tom Natural Puro (.0)";
+                detalheReflexo = "Sem reflexos adicionados; excelente cobertura de brancos.";
+            } else if (ref1 === ref2) {
+                codigoReflexo = `.${ref1}`;
+                statusReflexo = `Reflexo Puro ${nomesReflexos[ref1]} (.${ref1})`;
+                detalheReflexo = "Ambas as tintas reforçam a mesma nuance com intensidade total.";
+            } else if (ref1 === "0" || ref2 === "0") {
+                const refAtivo = ref1 !== "0" ? ref1 : ref2;
+                const gAtivo = ref1 !== "0" ? g1 : g2;
+                const proporcaoAtivo = (gAtivo / pesoTotal) * 100;
+                
+                codigoReflexo = `.${refAtivo}`;
+                statusReflexo = `Reflexo Suave ${nomesReflexos[refAtivo]} (.${refAtivo})`;
+                detalheReflexo = `Nuance atenuada pela base natural (${proporcaoAtivo.toFixed(0)}% da mistura).`;
+            } else if (opostos[ref1] === ref2) {
+                // Nuances complementares se anulam
+                if (Math.abs(g1 - g2) < 5) {
+                    codigoReflexo = ".0 / Marrom Neutro";
+                    statusReflexo = "Neutralização Mútua Completa";
+                    detalheReflexo = `${nomesReflexos[ref1]} (.${ref1}) anulou ${nomesReflexos[ref2]} (.${ref2}), criando um fundo neutro/bege.`;
+                } else if (g1 > g2) {
+                    codigoReflexo = `.${ref1} suave`;
+                    statusReflexo = `Dominância Residual de ${nomesReflexos[ref1]}`;
+                    detalheReflexo = `O reflexo .${ref2} foi totalmente neutralizado, restando uma suave nuance de .${ref1}.`;
+                } else {
+                    codigoReflexo = `.${ref2} suave`;
+                    statusReflexo = `Dominância Residual de ${nomesReflexos[ref2]}`;
+                    detalheReflexo = `O reflexo .${ref1} foi totalmente neutralizado, restando uma suave nuance de .${ref2}.`;
+                }
+            } else {
+                // Nuances diferentes não complementares -> formam reflexo primário e secundário
+                if (g1 >= g2) {
+                    codigoReflexo = `.${ref1}${ref2}`;
+                    statusReflexo = `${nomesReflexos[ref1]} Dominante com nuance ${nomesReflexos[ref2]}`;
+                    detalheReflexo = `Primário: .${ref1} (70% do reflexo) | Secundário: .${ref2} (30% do reflexo).`;
+                } else {
+                    codigoReflexo = `.${ref2}${ref1}`;
+                    statusReflexo = `${nomesReflexos[ref2]} Dominante com nuance ${nomesReflexos[ref1]}`;
+                    detalheReflexo = `Primário: .${ref2} (70% do reflexo) | Secundário: .${ref1} (30% do reflexo).`;
+                }
+            }
+
+            // Exibição dos resultados finais
+            const tomArredondado = Math.round(tomReal);
+            const nomeBase = nomesTons[tomArredondado] || "Tom Personalizado";
+            const tomRealFormatado = tomReal.toFixed(1);
+
+            document.getElementById('mix-resultado-real').innerText = tomRealFormatado;
+            document.getElementById('mix-resultado-codigo').innerText = `${tomRealFormatado}${codigoReflexo}`;
+            document.getElementById('mix-descricao-real').innerText = `${nomeBase} (${tomReal < mediaMatematica ? 'Levemente mais fechado pela dominância do escuro' : 'Fiel'})`;
+            document.getElementById('mix-status-reflexo').innerText = statusReflexo;
+            document.getElementById('mix-detalhe-reflexo').innerText = detalheReflexo;
+        }
+
+        // Executa ao carregar
+        calcularClareamento();
+        calcularRegra11();
+        calcularMistura();
+    </script>
+</body>
+</html>
